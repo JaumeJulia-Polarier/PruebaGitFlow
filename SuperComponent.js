@@ -4,6 +4,7 @@ const SuperComponent = () => {
     return (
         <div>
             {/* Your component content goes here */}
+            {/* Your component content goes here */}
         </div>
     );
 };
