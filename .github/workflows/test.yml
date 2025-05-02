@@ -12,14 +12,14 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{github.ref_name}}
+    environment: ${{github.ref}}
 
     steps:
       - name: github ref_name
-        run: echo ${{github.ref_name}}
+        run: echo ${{github.ref}}
       
       - name: github ref_name por si acaso
-        run: echo "${{ github.ref_name }}"
+        run: echo "${{ github.ref }}"
 
       - name: Log text variable
         run: echo ${{ vars.TEXT }}
