@@ -26,4 +26,5 @@ jobs:
           branch: stage # La rama de la que se hace el PR
           commit-message: 'Automated PR to stage'
           delete-branch: false
+          draft: true
           # labels: 'automated-pr'
