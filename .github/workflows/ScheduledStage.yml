@@ -84,10 +84,7 @@ jobs:
             PR_NUMBER: ${{ steps.create_pr.outputs.pr_number }}
         run: |
           set -x
-          gh pr merge "$PR_NUMBER" \
-            --auto \  
-            --merge \ 
-            --comment "Merged PR: develop -> stage"
+          gh pr merge "$PR_NUMBER" --auto --merge --comment "Merged PR: develop -> stage"
           set +x
 
         # --auto \  programa la PR para que se haga merge al pasar todas las validaciones y politicas
