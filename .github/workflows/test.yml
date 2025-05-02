@@ -3,23 +3,19 @@ on:
   push:
     branches:
       - main
-      - development
-  pull_request:
-    branches:
-      - main
-      - development
+      - develop
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{github.ref}}
+    environment: ${{github.ref_name}}
 
     steps:
       - name: github ref_name
-        run: echo ${{github.ref}}
+        run: echo ${{github.ref_name}}
       
       - name: github ref_name por si acaso
-        run: echo "${{ github.ref }}"
+        run: echo "${{ github.ref_name }}"
 
       - name: Log text variable
         run: echo ${{ vars.TEXT }}
