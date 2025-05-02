@@ -17,10 +17,19 @@ jobs:
       - name: Preventive Unit testing
         run: |
           echo "Running preventive unit tests..."
+
+    #   - name: Setup GitHub CLI
+    #     uses: cli/cli-action@v2
+
+      - name: Install GitHub CLI
+        if: success()
+        run: sudo apt-get install gh -y
+  
+      - name: Install jq
+        run: sudo apt-get install jq -y
         
       - name: PR to stage
         id: create_pr
-        if: success()
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
