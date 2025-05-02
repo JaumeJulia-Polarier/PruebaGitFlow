@@ -19,6 +19,7 @@ jobs:
           echo "Running preventive unit tests..."
         
       - name: PR to stage
+        if: success()
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -27,6 +28,15 @@ jobs:
             --head develop \
             --title "Automated PR: develop -> stage" \
             --body "This is an automated PR to stage."
+    
+      - name: Merge PR
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge \
+            --auto \ # programa la PR para que se haga merge al pasar todas las validaciones y politicas
+            --merge \ # fuerza que el merge sea de tipo merge commit, sin rebase ni squash
+            --comment "Merged PR: develop -> stage" --body "This is an automated PR to stage."
 
     #   - name: PR to stage
     #     uses: peter-evans/create-pull-request@v6
