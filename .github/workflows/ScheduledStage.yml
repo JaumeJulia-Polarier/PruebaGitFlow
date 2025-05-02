@@ -22,8 +22,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: 'PR to stage'
           body: 'This is an automated PR to stage.'
-          base: stage
-          branch: develop # La rama de la que se hace el PR
+          base: develop
+          branch: stage # La rama de la que se hace el PR
           commit-message: 'Automated PR to stage'
           delete-branch: false
           # labels: 'automated-pr'
