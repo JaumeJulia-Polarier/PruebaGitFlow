@@ -28,7 +28,8 @@ jobs:
       - name: PR to stage
         id: create_pr # Give this step an ID to reference its output
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_OUTPUT=$(gh pr create \
             --title "Automated PR: develop -> stage" \
