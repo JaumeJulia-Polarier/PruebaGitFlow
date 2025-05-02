@@ -23,7 +23,7 @@ jobs:
           title: 'PR to stage'
           body: 'This is an automated PR to stage.'
           base: stage
-          branch: develop # La rama de la que se hace el PR
+          head: develop # La rama de la que se hace el PR
           # head: 'develop' # No es necesario, ya que por defecto es la rama de la que se hace el PR. Es lo mismo que 'branch'
           commit-message: 'Automated PR to stage'
           delete-branch: false
