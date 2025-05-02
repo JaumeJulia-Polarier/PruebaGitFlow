@@ -34,9 +34,12 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr merge \
-            --auto \ # programa la PR para que se haga merge al pasar todas las validaciones y politicas
-            --merge \ # fuerza que el merge sea de tipo merge commit, sin rebase ni squash
+            --auto \  
+            --merge \ 
             --comment "Merged PR: develop -> stage" --body "This is an automated PR to stage."
+
+        # --auto \  programa la PR para que se haga merge al pasar todas las validaciones y politicas
+        # --merge \ fuerza que el merge sea de tipo merge commit, sin rebase ni squash
 
     #   - name: PR to stage
     #     uses: peter-evans/create-pull-request@v6
