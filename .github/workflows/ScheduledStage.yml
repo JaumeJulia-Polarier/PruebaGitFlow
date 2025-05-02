@@ -24,18 +24,21 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr create \
+          pr_output=$(gh pr create \
             --base stage \
             --head develop \
             --title "Automated PR: develop -> stage" \
-            --body "This is an automated PR to stage."
+            --body "This is an automated PR to stage." \
+            --json url)
+          
+          pr_url=$(echo $pr_output | jq -r '.url')
+          echo "pr_url=$pr_url" >> $GITHUB_OUTPUT
     
       - name: Merge PR
-        if: steps.create_pr.outputs.pull-request-url != ''
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr merge "${{ steps.create_pr.outputs.pull-request-url }}" \
+          gh pr merge "${{ steps.create_pr.outputs.pr_number }}" \
             --auto \  
             --merge \ 
             --comment "Merged PR: develop -> stage" --body "This is an automated PR to stage."
@@ -43,7 +46,24 @@ jobs:
         # --auto \  programa la PR para que se haga merge al pasar todas las validaciones y politicas
         # --merge \ fuerza que el merge sea de tipo merge commit, sin rebase ni squash
 
-    #   - name: PR to stage
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        #   - name: PR to stage
     #     uses: peter-evans/create-pull-request@v6
     #     with:
     #       token: ${{ secrets.GITHUB_TOKEN }}
