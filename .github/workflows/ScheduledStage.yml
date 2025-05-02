@@ -24,7 +24,12 @@ jobs:
           body: 'This is an automated PR to stage.'
           base: develop
           branch: stage # La rama de la que se hace el PR
-          commit-message: 'Automated PR to stage'
+          commit-message: |
+            the first line is the commit message
+
+            the commit description starts
+            after a blank line and can be
+            multiple lines
           delete-branch: false
           draft: true
           # labels: 'automated-pr'
