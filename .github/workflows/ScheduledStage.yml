@@ -24,22 +24,26 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pr_output=$(gh pr create \
+          PR_INFO=$(gh pr create \
             --title "Automated PR: develop -> stage" \
             --body "This is an automated PR to stage." \
             --base stage \
             --head develop \
             --label "automated-pr" \
             --json number,url)
-          
-          pr_url=$(echo $pr_output | jq -r '.url')
-          echo "pr_url=$pr_url" >> $GITHUB_OUTPUT
+
+          # Extract the PR number using jq and set it as a step output
+          PR_NUMBER=$(echo "$PR_INFO" | jq -r '.[0].number')
+
+          echo "Created PR #$PR_NUMBER"
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT # Set the output variable
     
       - name: Merge PR
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            PR_NUMBER: ${{ steps.create_pr.outputs.pr_number }}
         run: |
-          gh pr merge "${{ steps.create_pr.outputs.pr_number }}" \
+          gh pr merge "$PR_NUMBER" \
             --auto \  
             --merge \ 
             --comment "Merged PR: develop -> stage" --body "This is an automated PR to stage."
