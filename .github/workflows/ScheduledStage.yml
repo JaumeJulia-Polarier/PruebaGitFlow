@@ -83,9 +83,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             PR_NUMBER: ${{ steps.create_pr.outputs.pr_number }}
         run: |
-          set -x
-          gh pr merge "$PR_NUMBER" --auto --merge --comment "Merged PR: develop -> stage"
-          set +x
+          gh pr merge "$PR_NUMBER" --auto --merge
 
         # --auto \  programa la PR para que se haga merge al pasar todas las validaciones y politicas
         # --merge \ fuerza que el merge sea de tipo merge commit, sin rebase ni squash
