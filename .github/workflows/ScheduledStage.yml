@@ -10,26 +10,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          ref: develop
 
       - name: Preventive Unit testing
         run: |
           echo "Running preventive unit tests..."
         
       - name: PR to stage
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: 'PR to stage'
-          body: 'This is an automated PR to stage.'
-          base: develop
-          branch: stage # La rama de la que se hace el PR
-          commit-message: |
-            the first line is the commit message
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --base stage \
+            --head develop \
+            --title "Automated PR: develop -> stage" \
+            --body "This is an automated PR to stage."
 
-            the commit description starts
-            after a blank line and can be
-            multiple lines
-          delete-branch: false
-          draft: true
-          # labels: 'automated-pr'
+    #   - name: PR to stage
+    #     uses: peter-evans/create-pull-request@v6
+    #     with:
+    #       token: ${{ secrets.GITHUB_TOKEN }}
+    #       title: 'PR to stage'
+    #       body: 'This is an automated PR to stage.'
+    #       base: stage
+    #       branch: develop # La rama de la que se hace el PR
+    #       commit-message: |
+    #         the first line is the commit message
+
+    #         the commit description starts
+    #         after a blank line and can be
+    #         multiple lines
+    #       delete-branch: false
+    #       draft: true
+    #       # labels: 'automated-pr'
