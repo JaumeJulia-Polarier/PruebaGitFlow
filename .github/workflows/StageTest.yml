@@ -1,0 +1,23 @@
+name: SALE FULBITO?
+on:
+  push:
+    branches:
+      - stage
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{github.ref_name}}
+
+    steps:
+      - name: github ref_name
+        run: echo ${{github.ref_name}}
+      
+      - name: github ref_name por si acaso
+        run: echo "${{ github.ref_name }}"
+
+      - name: Log text variable
+        run: echo ${{ vars.TEXT }}
+
+      - name: Log text variable por si acaso
+        run: echo "${{ vars.TEXT }}"
