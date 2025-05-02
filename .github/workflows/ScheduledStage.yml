@@ -2,7 +2,7 @@ name: PR a stage
 
 on:
   schedule:
-    - cron: '12 7 * * *' # Cada día a la medianoche
+    - cron: '15 7 * * *' # Cada día a la medianoche
 
 jobs:
     prepare-stage:
