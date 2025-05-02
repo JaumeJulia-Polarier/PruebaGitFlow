@@ -58,25 +58,6 @@ jobs:
           echo "Created PR #$PR_NUMBER"
           # Set the PR number as a step output variable for the next step
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-        
-    #   - name: PR to stage
-    #     id: create_pr
-    #     env:
-    #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     run: |
-    #       PR_INFO=$(gh pr create \
-    #         --title "Automated PR: develop -> stage" \
-    #         --body "This is an automated PR to stage." \
-    #         --base stage \
-    #         --head develop \
-    #         --label "automated-pr" \
-    #         --json number,url)
-
-    #       # Extract the PR number using jq and set it as a step output
-    #       PR_NUMBER=$(echo "$PR_INFO" | jq -r '.[0].number')
-
-    #       echo "Created PR #$PR_NUMBER"
-    #       echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT # Set the output variable
     
       - name: Merge PR
         env:
@@ -87,38 +68,3 @@ jobs:
 
         # --auto \  programa la PR para que se haga merge al pasar todas las validaciones y politicas
         # --merge \ fuerza que el merge sea de tipo merge commit, sin rebase ni squash
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        #   - name: PR to stage
-    #     uses: peter-evans/create-pull-request@v6
-    #     with:
-    #       token: ${{ secrets.GITHUB_TOKEN }}
-    #       title: 'PR to stage'
-    #       body: 'This is an automated PR to stage.'
-    #       base: stage
-    #       branch: develop # La rama de la que se hace el PR
-    #       commit-message: |
-    #         the first line is the commit message
-
-    #         the commit description starts
-    #         after a blank line and can be
-    #         multiple lines
-    #       delete-branch: false
-    #       draft: true
-    #       # labels: 'automated-pr'
