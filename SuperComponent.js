@@ -12,6 +12,8 @@ const SuperComponent = () => {
             {/* Your component content goes here */}
             {/* Your component content goes here */}
             {/* Your component content goes here */}
+            {/* Your component content goes here */}
+            {/* Your component content goes here */}
         </div>
     );
 };
