@@ -1,9 +1,9 @@
-name: TEST deployment
+name: Automatic deployment
 on:
-  workflow_run:
-    workflows: ['CI', 'PR a stage']
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ['CI', 'PR a stage']
+  #   types:
+  #     - completed
   push:
     branches:
       - main
@@ -16,6 +16,9 @@ jobs:
     environment: ${{github.ref_name}}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: github ref_name
         run: echo ${{github.ref_name}}
       
