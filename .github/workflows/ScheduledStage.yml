@@ -46,6 +46,7 @@ jobs:
           # We'll use grep to find the line containing the URL and sed to extract the number.
           # Ensure the grep pattern is robust enough to find the URL line.
           PR_URL=$(echo "$PR_OUTPUT" | grep -oP 'https://github.com/[^/]+/[^/]+/pull/\d+' | head -1)
+          # recomendacion de copilot: PR_URL=$(echo "$PR_OUTPUT" | grep -Eo 'https://github.com/[^/]+/[^/]+/pull/[0-9]+')
 
           if [ -z "$PR_URL" ]; then
             echo "Error: Could not find PR URL in output."
@@ -55,6 +56,7 @@ jobs:
 
           # Extract the number from the URL using sed
           PR_NUMBER=$(echo "$PR_URL" | sed -E 's/.*pull\/([0-9]+).*/\1/')
+          # recomendacion de copilot: PR_NUMBER=$(echo "$PR_URL" | grep -Eo '[0-9]+$')
 
           echo "Created PR #$PR_NUMBER"
           # Set the PR number as a step output variable for the next step
