@@ -1,42 +1,59 @@
-name: PR a stage
-
+name: Production Automatic PR
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 7 * * 1-5' # Cada día a la medianoche
+  push:
+    branches:
+      - stage
 
 jobs:
-  prepare-stage:
+  Prepare_PR:
     runs-on: ubuntu-latest
+    environment: ${{github.ref_name}}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          ref: develop
-
-      - name: Preventive Unit testing
-        run: |
-          echo "Running preventive unit tests..."
 
       - name: Install GitHub CLI
-        if: success()
         run: sudo apt-get install gh -y
   
       - name: Install jq
         run: sudo apt-get install jq -y
 
-      - name: PR to stage
+      - name: Create label
+        id: create_label
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+          target_env: main
+        run: |
+          LAST_LABEL=$(gh pr list --base ${target_env} --state all --limit 100 --json labels \
+            | jq -r '.[].labels[].name' \
+            | grep "^${target_env}_" \
+            | sort -V \
+            | tail -n 1)
+
+          if [[ "$LAST_LABEL" =~ ^${target_env}_[0-9]+$ ]]; then
+            LAST_INDEX=$(echo "$LAST_LABEL" | awk -F_ '{print $2}')
+            NEXT_INDEX=$((LAST_INDEX + 1))
+          else
+            NEXT_INDEX=1
+          fi
+
+          PR_LABEL="${target_env}_${NEXT_INDEX}"
+
+          gh label create "$PR_LABEL" --color "0366d6" --description "Auto-generated release tag for $target_env" || echo "Label already exists"
+
+      - name: PR to production
         id: create_pr # Give this step an ID to reference its output
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_OUTPUT=$(gh pr create \
-            --title "Automated PR: develop -> stage" \
-            --body "This is an automated PR to stage." \
-            --base stage \
-            --head develop \
-            --label "automated-pr")
+            --title "Automated PR: stage -> main" \
+            --body "This is the next upload to production." \
+            --base main \
+            --head stage \
+            --label "automated-pr" \
+            --reviewer "copilot,Polarier" )
 
           echo "gh pr create output:"
           echo "$PR_OUTPUT"
@@ -59,13 +76,4 @@ jobs:
           echo "Created PR #$PR_NUMBER"
           # Set the PR number as a step output variable for the next step
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-    
-      - name: Merge PR
-        env:
-            GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
-            PR_NUMBER: ${{ steps.create_pr.outputs.pr_number }}
-        run: |
-          gh pr merge "$PR_NUMBER" --merge --auto
-
-        # --auto \  programa la PR para que se haga merge al pasar todas las validaciones y politicas
-        # --merge \ fuerza que el merge sea de tipo merge commit, sin rebase ni squash
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
