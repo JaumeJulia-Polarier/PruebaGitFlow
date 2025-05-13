@@ -23,23 +23,24 @@ jobs:
         id: create_label
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+          target_env: main
         run: |
-          LAST_LABEL=$(gh pr list --base ${{vars.TEXT}} --state all --limit 100 --json labels \
+          LAST_LABEL=$(gh pr list --base ${target_env} --state all --limit 100 --json labels \
             | jq -r '.[].labels[].name' \
-            | grep "^${ENV}_" \
+            | grep "^${target_env}_" \
             | sort -V \
             | tail -n 1)
 
-          if [[ "$LAST_LABEL" =~ ^${ENV}_[0-9]+$ ]]; then
+          if [[ "$LAST_LABEL" =~ ^${target_env}_[0-9]+$ ]]; then
             LAST_INDEX=$(echo "$LAST_LABEL" | awk -F_ '{print $2}')
             NEXT_INDEX=$((LAST_INDEX + 1))
           else
             NEXT_INDEX=1
           fi
 
-          PR_LABEL="${ENV}_${NEXT_INDEX}"
+          PR_LABEL="${target_env}_${NEXT_INDEX}"
 
-          gh label create "$PR_LABEL" --color "0366d6" --description "Auto-generated release tag for $ENV" || echo "Label already exists"
+          gh label create "$PR_LABEL" --color "0366d6" --description "Auto-generated release tag for $target_env" || echo "Label already exists"
 
       - name: PR to production
         id: create_pr # Give this step an ID to reference its output
