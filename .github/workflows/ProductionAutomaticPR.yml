@@ -21,6 +21,9 @@ jobs:
 
       - name: Generate deployment batch ID
         id: generate_batch_id
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+          target_env: MAIN
         run: |
           TODAY=$(date +%Y%m%d)
           PREFIX="PROD_DEPLOY_${TODAY}_"
