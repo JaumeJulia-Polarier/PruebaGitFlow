@@ -1,0 +1,78 @@
+name: Production Automatic PR
+on:
+  push:
+    branches:
+      - stage
+
+jobs:
+  Prepare_PR:
+    runs-on: ubuntu-latest
+    environment: ${{github.ref_name}}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh -y
+  
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
+      - name: Create label
+        id: create_label
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+        run: |
+          LAST_LABEL=$(gh pr list --base ${{vars.TEXT}} --state all --limit 100 --json labels \
+            | jq -r '.[].labels[].name' \
+            | grep "^${ENV}_" \
+            | sort -V \
+            | tail -n 1)
+
+          if [[ "$LAST_LABEL" =~ ^${ENV}_[0-9]+$ ]]; then
+            LAST_INDEX=$(echo "$LAST_LABEL" | awk -F_ '{print $2}')
+            NEXT_INDEX=$((LAST_INDEX + 1))
+          else
+            NEXT_INDEX=1
+          fi
+
+          PR_LABEL="${ENV}_${NEXT_INDEX}"
+
+          gh label create "$PR_LABEL" --color "0366d6" --description "Auto-generated release tag for $ENV" || echo "Label already exists"
+
+      - name: PR to production
+        id: create_pr # Give this step an ID to reference its output
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+        run: |
+          PR_OUTPUT=$(gh pr create \
+            --title "Automated PR: stage -> main" \
+            --body "This is the next upload to production." \
+            --base main \
+            --head stage \
+            --label "automated-pr" \
+            --reviewer "copilot,Polarier" )
+
+          echo "gh pr create output:"
+          echo "$PR_OUTPUT"
+
+          # Extract the PR number from the standard output URL
+          # The output typically includes a line with the PR URL like "https://github.com/owner/repo/pull/123"
+          # We'll use grep to find the line containing the URL and sed to extract the number.
+          # Ensure the grep pattern is robust enough to find the URL line.
+          PR_URL=$(echo "$PR_OUTPUT" | grep -oP 'https://github.com/[^/]+/[^/]+/pull/\d+' | head -1)
+
+          if [ -z "$PR_URL" ]; then
+            echo "Error: Could not find PR URL in output."
+            # Exit with a non-zero status to fail the step
+            exit 1
+          fi
+
+          # Extract the number from the URL using sed
+          PR_NUMBER=$(echo "$PR_URL" | sed -E 's/.*pull\/([0-9]+).*/\1/')
+
+          echo "Created PR #$PR_NUMBER"
+          # Set the PR number as a step output variable for the next step
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
