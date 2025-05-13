@@ -19,40 +19,43 @@ jobs:
       - name: Install jq
         run: sudo apt-get install jq -y
 
-      - name: Create label
-        id: create_label
-        env:
-          GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
-          target_env: main
+      - name: Generate deployment batch ID
+        id: generate_batch_id
         run: |
-          LAST_LABEL=$(gh pr list --base ${target_env} --state all --limit 100 --json labels \
-            | jq -r '.[].labels[].name' \
-            | grep "^${target_env}_" \
-            | sort -V \
-            | tail -n 1)
+          TODAY=$(date +%Y%m%d)
+          PREFIX="PROD_DEPLOY_${TODAY}_"
 
-          if [[ "$LAST_LABEL" =~ ^${target_env}_[0-9]+$ ]]; then
-            LAST_INDEX=$(echo "$LAST_LABEL" | awk -F_ '{print $2}')
-            NEXT_INDEX=$((LAST_INDEX + 1))
+          # Obtener títulos de las PRs abiertas o cerradas hacia main
+          PR_TITLES=$(gh pr list --base main --state all --limit 100 --json title -q '.[].title')
+
+          # Filtrar títulos que contengan nuestro patrón y extraer el número
+          MAX_NUMBER=$(echo "$PR_TITLES" | grep -o "${PREFIX}[0-9]\{3\}" | sed "s/${PREFIX}//" | sort -nr | head -n 1)
+
+          if [ -z "$MAX_NUMBER" ]; then
+            NEXT_NUMBER="001"
           else
-            NEXT_INDEX=1
+            NEXT_NUMBER=$(printf "%03d" $((10#$MAX_NUMBER + 1)))
           fi
 
-          PR_LABEL="${target_env}_${NEXT_INDEX}"
+          DEPLOY_ID="${PREFIX}${NEXT_NUMBER}"
 
-          gh label create "$PR_LABEL" --color "0366d6" --description "Auto-generated release tag for $target_env" || echo "Label already exists"
+          echo "Deploy batch ID: $DEPLOY_ID"
+          echo "deploy_id=$DEPLOY_ID" >> "$GITHUB_OUTPUT"
 
       - name: PR to production
         id: create_pr # Give this step an ID to reference its output
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+          DEPLOY_ID: ${{ steps.generate_batch_id.outputs.deploy_id }}
         run: |
           PR_OUTPUT=$(gh pr create \
-            --title "Automated PR: stage -> main" \
-            --body "This is the next upload to production." \
+            --title "Automated PR: stage -> main [$DEPLOY_ID]" \
+            --body "This PR is part of the production deploy batch [$DEPLOY_ID]" \
             --base main \
             --head stage \
-            --label "automated-pr" ) #\
+            --label "automated-pr" \
+            --label "${{ steps.create_label.outputs.PR_LABEL }}" \
+            ) #\
             # --reviewer "copilot,Polarier" )
 
           echo "gh pr create output:"
