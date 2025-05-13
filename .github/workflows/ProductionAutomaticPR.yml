@@ -52,8 +52,8 @@ jobs:
             --body "This is the next upload to production." \
             --base main \
             --head stage \
-            --label "automated-pr" \
-            --reviewer "copilot,Polarier" )
+            --label "automated-pr" ) #\
+            # --reviewer "copilot,Polarier" )
 
           echo "gh pr create output:"
           echo "$PR_OUTPUT"
