@@ -34,7 +34,7 @@ jobs:
             repo=$1
             id=$2
 
-            prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,merged | jq -c '.[]')
+            prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
             if [[ -z "$prs" ]]; then
               echo "No hay PR abierta con ID $id en $repo. Considerado OK."
               return 0
@@ -43,8 +43,8 @@ jobs:
             ok=false
             echo "$prs" | while read -r pr; do
               aprobado=$(echo "$pr" | jq '[.reviews[] | select(.state=="APPROVED")] | length')
-              mergeado=$(echo "$pr" | jq '.merged')
-              if [[ "$aprobado" -gt 0 && "$mergeado" == "false" ]]; then
+              mergeado=$(echo "$pr" | jq '.mergedAt')
+              if [[ "$aprobado" -gt 0 && "$mergeado" == "null" ]]; then
                 echo "PR en $repo está aprobada y no mergeada. OK."
                 ok=true
                 break
