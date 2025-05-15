@@ -41,7 +41,7 @@ jobs:
             fi
 
             ok=false
-            echo "$prs" | while read -r pr; do
+            while read -r pr; do
               aprobado=$(echo "$pr" | jq '[.reviews[] | select(.state=="APPROVED")] | length')
               mergeado=$(echo "$pr" | jq '.mergedAt')
               if [[ "$aprobado" -gt 0 && "$mergeado" == "null" ]]; then
@@ -50,7 +50,7 @@ jobs:
                 break
                 # return 0
               fi
-            done
+            done < <(echo "$prs")
 
             if [[ "$ok" == true ]]; then
               return 0
