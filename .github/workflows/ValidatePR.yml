@@ -88,6 +88,8 @@ jobs:
           merge_if_exists() {
             repo=$1
             id=$2
+            echo "Repo: $repo"
+            echo "ID: $id"
             pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number | jq -r '.[0].number')
             if [[ "$pr_number" != "null" ]]; then
               echo "Mergeando PR #$pr_number en $repo"
@@ -98,4 +100,4 @@ jobs:
           }
 
           merge_if_exists "$BACKEND_REPO" "$ID_PR"
-          merge_if_exists "$SQL_REPO" "$ID_PR"
+          # merge_if_exists "$SQL_REPO" "$ID_PR"
