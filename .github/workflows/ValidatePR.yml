@@ -40,13 +40,13 @@ jobs:
               return 0
             fi
 
-            ok = false
+            ok=false
             echo "$prs" | while read -r pr; do
               aprobado=$(echo "$pr" | jq '[.reviews[] | select(.state=="APPROVED")] | length')
               mergeado=$(echo "$pr" | jq '.merged')
               if [[ "$aprobado" -gt 0 && "$mergeado" == "false" ]]; then
                 echo "PR en $repo está aprobada y no mergeada. OK."
-                ok = true
+                ok=true
                 break
                 # return 0
               fi
