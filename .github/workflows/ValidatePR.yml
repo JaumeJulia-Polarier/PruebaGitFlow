@@ -71,15 +71,6 @@ jobs:
     if: ${{ needs.check_validations_on_other_repositories.outputs.ready_to_merge == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del repositorio actual
-        uses: actions/checkout@v4
-
-      - name: Mergear en repositorio actual
-        env:
-          GH_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
-        run: |
-          gh pr merge ${{ github.event.pull_request.number }} --merge
-
       - name: Mergear en otros repos (A y B)
         env:
           GH_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
@@ -104,3 +95,12 @@ jobs:
 
           merge_if_exists "$BACKEND_REPO" "$ID_PR"
           # merge_if_exists "$SQL_REPO" "$ID_PR"
+
+      - name: Checkout del repositorio actual
+        uses: actions/checkout@v4
+
+      - name: Mergear en repositorio actual
+        env:
+          GH_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} --merge
