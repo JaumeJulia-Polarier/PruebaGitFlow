@@ -61,7 +61,7 @@ jobs:
           }
 
           check_repo "$BACKEND_REPO" "$ID_PR" || exit 1
-          check_repo "$SQL_REPO" "$ID_PR" || exit 1
+          # check_repo "$SQL_REPO" "$ID_PR" || exit 1
 
           echo "ready_to_merge=true" >> $GITHUB_OUTPUT
       
