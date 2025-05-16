@@ -32,6 +32,7 @@ jobs:
           # Obtener fecha
           DATE=$(date +%Y%m%d)
           TAGS=()
+          TAG_PATTERN="^1\.[0-9]{8}\.[0-9]+$"
 
           REPOS=($FRONTEND_REPO $BACKEND_REPO $SQL_REPO)
           for REPO in "${REPOS[@]}"; do
