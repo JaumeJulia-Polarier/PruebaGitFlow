@@ -26,22 +26,41 @@ jobs:
         id: generate_batch_id
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+          FRONTEND_REPO: ${{ secrets.FRONTEND_REPO }}
+          BACKEND_REPO: ${{ secrets.BACKEND_REPO }}
+          SQL_REPO: ${{ secrets.SQL_REPO }}
           target_env: MAIN
         run: |
           TODAY=$(date +%Y%m%d)
           PREFIX="PROD_DEPLOY_${TODAY}_"
 
-          # Obtener títulos de las PRs abiertas o cerradas hacia main
-          PR_TITLES=$(gh pr list --base main --state all --limit 100 --json title -q '.[].title')
+          ALL_IDS=()
+          REPOS=($FRONTEND_REPO $BACKEND_REPO $SQL_REPO)
+          for REPO in "${REPOS[@]}"; do
+            # Obtener el ID de la última PR cerrada hacia main
+            PR_TITLES=$(gh pr list --base main --state all --limit 10 --json title -q '.[].title' --repo "$REPO")
+            LAST_PR_NUMBER=$(echo "$PR_TITLES" | grep -o "${PREFIX}[0-9]\{3\}" | sed "s/${PREFIX}//" | sort -nr | head -n 1)           
+            ALL_IDS+=("$LAST_PR_NUMBER")
+          done
 
-          # Filtrar títulos que contengan nuestro patrón y extraer el número
-          MAX_NUMBER=$(echo "$PR_TITLES" | grep -o "${PREFIX}[0-9]\{3\}" | sed "s/${PREFIX}//" | sort -nr | head -n 1)
-
-          if [ -z "$MAX_NUMBER" ]; then
+          if [ "${#ALL_IDS[@]}" -eq 0 ]; then
             NEXT_NUMBER="001"
           else
+            MAX_NUMBER=$(printf "%s\n" "${ALL_IDS[@]}" | sort -nr | head -n 1)
             NEXT_NUMBER=$(printf "%03d" $((10#$MAX_NUMBER + 1)))
           fi
+
+          # # Obtener títulos de las PRs abiertas o cerradas hacia main
+          # PR_TITLES=$(gh pr list --base main --state all --limit 10 --json title -q '.[].title')
+
+          # # Filtrar títulos que contengan nuestro patrón y extraer el número
+          # MAX_NUMBER=$(echo "$PR_TITLES" | grep -o "${PREFIX}[0-9]\{3\}" | sed "s/${PREFIX}//" | sort -nr | head -n 1)
+
+          # if [ -z "$MAX_NUMBER" ]; then
+          #   NEXT_NUMBER="001"
+          # else
+          #   NEXT_NUMBER=$(printf "%03d" $((10#$MAX_NUMBER + 1)))
+          # fi
 
           DEPLOY_ID="${PREFIX}${NEXT_NUMBER}"
 
