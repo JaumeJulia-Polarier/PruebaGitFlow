@@ -46,7 +46,7 @@ jobs:
 
           echo "TAGS: ${TAGS[@]}"
 
-          LATEST_TAG=$(printf "%s\n" "${TAGS[@]}" | grep "refs/tags/1.$DATE.*" | sort -V | tail -1)
+          LATEST_TAG=$(printf "%s\n" "${TAGS[@]}" | sort -V | tail -1)
 
           # git fetch --tags
           # LATEST_TAG=$(git tag --list "1.$DATE.*" | sort -V | tail -1)
