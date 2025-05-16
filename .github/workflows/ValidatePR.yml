@@ -23,7 +23,7 @@ jobs:
           # El id de prod tiene formato PROD_DEPLOY_20231012_001
           # Si el entorno es prod, deberiamos ignorar el sufijo y quedarnos con PROD_DEPLOY_20231012
           echo "environment: ${{ github.event.pull_request.base.ref }}"
-          if [[ ${{ github.event.pull_request.base.ref }} == "main" ]]; then
+          if [[ "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
             ID_PR="${ID_PR%_*}"
           fi
           echo "ID_PR=$ID_PR" >> $GITHUB_OUTPUT
