@@ -38,20 +38,13 @@ jobs:
           for REPO in "${REPOS[@]}"; do
             # REMOTE_TAGS=$(gh api -X GET /repos/$REPO/git/refs/tags | jq -r '.[].ref' | grep "refs/tags/1.$DATE.*" | sort -V | tail -1)
             REPO_URL="https://$GITHUB_TOKEN@github.com/$REPO.git"
-            echo "REPO: $REPO"
             REMOTE_TAGS=$(git ls-remote --tags "$REPO_URL" | awk '{print $2}' | sed 's|refs/tags/||' | grep -E "$TAG_PATTERN" | sort -V | tail -1 || true)
-            echo "REMOTE_TAGS: $REMOTE_TAGS"
             TAGS+=("$REMOTE_TAGS")
           done
 
           echo "TAGS: ${TAGS[@]}"
 
           LATEST_TAG=$(printf "%s\n" "${TAGS[@]}" | sort -V | tail -1)
-
-          # git fetch --tags
-          # LATEST_TAG=$(git tag --list "1.$DATE.*" | sort -V | tail -1)
-
-          echo "Fecha: $DATE"
 
           echo "Latest tag: $LATEST_TAG"
           if [ -z "$LATEST_TAG" ]; then
@@ -71,5 +64,5 @@ jobs:
           fi
 
           # Crear tag en el último commit (el merge a main)
-          # git tag "$NEXT_TAG"
-          # git push origin "$NEXT_TAG"
+          git tag "$NEXT_TAG"
+          git push origin "$NEXT_TAG"
