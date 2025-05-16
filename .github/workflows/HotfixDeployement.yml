@@ -25,6 +25,7 @@ jobs:
 
   check-branch-name:
     runs-on: ubuntu-latest
+    needs: propagate-hotfix
     steps:
       - name: Check branch name pattern
         env:
