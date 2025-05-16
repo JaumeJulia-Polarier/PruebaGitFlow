@@ -22,7 +22,7 @@ jobs:
       - name: Create Tag
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
-          FRONTEND_REPO: ${{ secrets.FRONTEND_REPO }}
+          FRONTEND_REPO: ${{ github.repository }}
           BACKEND_REPO: ${{ secrets.BACKEND_REPO }}
           SQL_REPO: ${{ secrets.SQL_REPO }}
         run: |
