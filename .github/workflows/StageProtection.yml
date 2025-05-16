@@ -14,7 +14,7 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref }}
         run: |
           echo "Checking branch: $BRANCH_NAME"
-          if [[ "$BRANCH_NAME" == "develop" ]]; then
+          if [[ "$BRANCH_NAME" == "develop" ]] || [[ "$BRANCH_NAME" == "main" ]]; then
             echo "✅ Branch name is valid"
           else
             echo "❌ Branch name '$BRANCH_NAME' is not allowed for PRs to stage. Only automatic PRs from develop are allowed."

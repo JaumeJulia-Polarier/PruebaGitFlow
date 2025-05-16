@@ -28,7 +28,17 @@ jobs:
 
           # Obtener fecha
           DATE=$(date +%Y%m%d)
+          git fetch --tags
           LATEST_TAG=$(git tag --list "1.$DATE.*" | sort -V | tail -1)
+
+          echo "Fecha: $DATE"
+
+          echo "Latest tag: $LATEST_TAG"
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No previous tag found for today."
+          else
+            echo "Previous tag found: $LATEST_TAG"
+          fi
 
           if [ -z "$LATEST_TAG" ]; then
             NEXT_TAG="1.$DATE.0"
