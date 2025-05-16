@@ -10,7 +10,7 @@ jobs:
     if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'hotfix/')
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
 
     steps:
       - name: Create PR from main to stage
@@ -22,13 +22,3 @@ jobs:
         run: |
           gh pr create --base develop --head main --title "Propagate hotfix to develop" --body "This PR propagates the hotfix from main to develop." --repo ${{ github.repository }} --label "hotfix_propagation" || echo "PR already exists"
           gh pr merge --merge --admin --auto $(gh pr list --base develop --head main --json number -q '.[0].number') --repo ${{ github.repository }} || echo "PR already merged or not found"
-
-  check-branch-name:
-    runs-on: ubuntu-latest
-    needs: propagate-hotfix
-    steps:
-      - name: Check branch name pattern
-        env:
-          BRANCH_NAME: ${{ github.head_ref }}
-        run: |
-          echo "Overriding required branch name check for hotfix deployment"
