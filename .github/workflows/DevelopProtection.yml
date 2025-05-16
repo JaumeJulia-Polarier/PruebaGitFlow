@@ -14,7 +14,7 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref }}
         run: |
           echo "Checking branch: $BRANCH_NAME"
-          if [[ "$BRANCH_NAME" =~ ^(hotfix|feature|internal|bug)/.+ ]]; then
+          if [[ "$BRANCH_NAME" =~ ^(hotfix|feature|internal|bug|main)/.+ ]]; then
             echo "✅ Branch name is valid"
           else
             echo "❌ Branch name '$BRANCH_NAME' is not allowed for PRs to develop, make sure it follows the pattern 'hotfix/', 'feature/', 'internal/' or 'bug/' depending on the implementation."
