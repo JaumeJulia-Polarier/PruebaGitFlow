@@ -29,6 +29,8 @@ jobs:
           FRONTEND_REPO: ${{ secrets.FRONTEND_REPO }}
           BACKEND_REPO: ${{ secrets.BACKEND_REPO }}
           SQL_REPO: ${{ secrets.SQL_REPO }}
+          CURRENT_REPO: ${{ github.repository }}
+          CURRENT_PR: ${{ github.event.pull_request.number }}
         run: |
           check_repo() {
             repo=$1
@@ -55,6 +57,7 @@ jobs:
             if [[ "$ok" == true ]]; then
               return 0
             else
+              gh pr edit "$CURRENT_PR" --repo "$CURRENT_REPO" --add-label "sync_pending"
               echo "PR en $repo no está aprobada o ya mergeada. NO OK."
               return 1
             fi
@@ -88,6 +91,7 @@ jobs:
             if [[ "$pr_number" != "null" ]]; then
               echo "Mergeando PR #$pr_number en $repo"
               gh pr merge $pr_number -R "$repo" --merge
+              gh pr edit $pr_number --repo "$repo" --remove-label "sync_pending" || echo "La etiqueta no existía o ya fue eliminada."
             else
               echo "No se encontró PR con ID $id en $repo"
             fi
