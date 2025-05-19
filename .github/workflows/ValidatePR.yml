@@ -77,8 +77,8 @@ jobs:
           check_repo "$SQL_REPO" "$ID_PR" || exit 1
 
           echo "ready_to_merge=true" >> $GITHUB_OUTPUT
-          echo "pr_numbers=${pr_numbers[@]}" >> $GITHUB_OUTPUT
-          echo "pr_numbers=${pr_numbers[@]}"
+          echo "pr_numbers=$pr_numbers" >> $GITHUB_OUTPUT
+          echo "pr_numbers=$pr_numbers"
 
   start_coordinated_merge:
     name: Start coordinated merge
