@@ -37,11 +37,11 @@ jobs:
           CURRENT_REPO: ${{ github.repository }}
           CURRENT_PR: ${{ github.event.pull_request.number }}
         run: |
+          declare -A pr_numbers
+
           check_repo() {
             repo=$1
             id=$2
-
-            echo "$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')"
 
             prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
             echo "prs=$prs"
@@ -56,6 +56,8 @@ jobs:
               mergeado=$(echo "$pr" | jq '.mergedAt')
               if [[ "$aprobado" -gt 0 && "$mergeado" == "null" ]]; then
                 echo "PR en $repo está aprobada y no mergeada. OK."
+                pr_number=$(echo "$pr" | jq '.number')
+                pr_numbers["$repo"]=$pr_number
                 ok=true
                 break
                 # return 0
@@ -75,7 +77,8 @@ jobs:
           check_repo "$SQL_REPO" "$ID_PR" || exit 1
 
           echo "ready_to_merge=true" >> $GITHUB_OUTPUT
-      
+          echo "pr_numbers=${pr_numbers[@]}" >> $GITHUB_OUTPUT
+
   start_coordinated_merge:
     name: Start coordinated merge
     needs: check_validations_on_other_repositories
@@ -91,18 +94,15 @@ jobs:
           BACKEND_REPO: ${{ secrets.BACKEND_REPO }}
           SQL_REPO: ${{ secrets.SQL_REPO }}
           ID_PR: ${{ needs.check_validations_on_other_repositories.outputs.id_pr }}
+          pr_numbers: ${{ needs.check_validations_on_other_repositories.outputs.pr_numbers }}
         run: |
           merge_if_exists() {
             repo=$1
             id=$2
             echo "Repo: $repo"
             echo "ID: $id"
-            echo "pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number)"
-            echo "pr_number1=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "[PROD_DEPLOY_20250519_003] in:title" --json number)"
-            echo "pr_number2=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "[PROD_DEPLOY_20250519_003] in:title" --json number,reviews,mergedAt)"
-            echo "Y esto me saca algo al menos? prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')"
-            pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
-            pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number | jq -r '.[0].number')
+            # pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number | jq -r '.[0].number')
+            pr_number=${pr_numbers[$repo]}
             if [[ "$pr_number" != "null" ]]; then
               echo "Mergeando PR #$pr_number en $repo"
               gh pr merge $pr_number -R "$repo" --merge
