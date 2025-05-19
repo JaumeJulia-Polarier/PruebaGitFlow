@@ -98,7 +98,7 @@ jobs:
             id=$2
             echo "Repo: $repo"
             echo "ID: $id"
-            echo "veras: $(gh pr list -R "$repo" --state open --search " in:title" --json number | jq -r '.[0].number')"
+            echo "veras: $(gh pr list -R "$repo" --state open --search "$flipi in:title" --json number | jq -r '.[0].number')"
             pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number | jq -r '.[0].number')
             echo "PR number: $pr_number"
             if [[ "$pr_number" != "null" ]]; then
