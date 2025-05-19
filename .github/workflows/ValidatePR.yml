@@ -36,6 +36,7 @@ jobs:
           SQL_REPO: ${{ secrets.SQL_REPO }}
           CURRENT_REPO: ${{ github.repository }}
           CURRENT_PR: ${{ github.event.pull_request.number }}
+          ID_PR: ${{ steps.extract-id.outputs.id_pr }}
         run: |
           check_repo() {
             repo=$1
@@ -44,6 +45,11 @@ jobs:
             echo "dentro de check_repo id=$id"
 
             prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
+            allPR=$(gh pr list -R "$repo" --state open --json number,title,reviews,mergedAt)
+            echo "allPR=$allPR"
+            matching_prs=$(echo "$prs" | jq --arg id "$id" '[.[] | select(.title | contains($id))]')
+            echo "matching_prs=$matching_prs"
+
             echo "prs=$prs"
             if [[ -z "$prs" ]]; then
               echo "No hay PR abierta con ID $id en $repo. Considerado OK."
