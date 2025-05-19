@@ -64,6 +64,8 @@ jobs:
             repo=$1
             id=$2
 
+            echo "dentro de check_repo id=$id"
+
             prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
             echo "prs=$prs"
             prsh=$(gh pr list -R "$BACKEND_REPO" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
