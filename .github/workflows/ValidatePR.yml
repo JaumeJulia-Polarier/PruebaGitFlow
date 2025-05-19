@@ -98,6 +98,8 @@ jobs:
             echo "Repo: $repo"
             echo "ID: $id"
             echo "pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number)"
+            echo "pr_number1=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "[PROD_DEPLOY_20250519_003] in:title" --json number)"
+            echo "pr_number2=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "[PROD_DEPLOY_20250519_003] in:title" --json number,reviews,mergedAt)"
             echo "Y esto me saca algo al menos? prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')"
             pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
             pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number | jq -r '.[0].number')
