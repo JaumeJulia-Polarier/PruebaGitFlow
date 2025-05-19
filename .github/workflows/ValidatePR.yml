@@ -42,6 +42,7 @@ jobs:
             id=$2
 
             prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
+            echo "prs=$prs"
             if [[ -z "$prs" ]]; then
               echo "No hay PR abierta con ID $id en $repo. Considerado OK."
               return 0
