@@ -76,9 +76,15 @@ jobs:
           check_repo "$BACKEND_REPO" "$ID_PR" || exit 1
           check_repo "$SQL_REPO" "$ID_PR" || exit 1
 
+          # Construir salida como JSON
+          pr_numbers_json="{"
+          for key in "${!pr_numbers[@]}"; do
+            pr_numbers_json+="\"$key\":\"${pr_numbers[$key]}\","
+          done
+
+          pr_numbers_json="${pr_numbers_json%,}}"  # quitar coma final y cerrar
           echo "ready_to_merge=true" >> $GITHUB_OUTPUT
-          echo "pr_numbers=$pr_numbers" >> $GITHUB_OUTPUT
-          echo "pr_numbers=$pr_numbers"
+          echo "pr_numbers=$pr_numbers_json" >> $GITHUB_OUTPUT
 
   start_coordinated_merge:
     name: Start coordinated merge
