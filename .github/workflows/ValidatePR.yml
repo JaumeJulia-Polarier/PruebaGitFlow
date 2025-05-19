@@ -86,6 +86,12 @@ jobs:
           echo "ready_to_merge=true" >> $GITHUB_OUTPUT
           echo "pr_numbers=$pr_numbers_json" >> $GITHUB_OUTPUT
 
+      - name: Just checking
+        id: whut
+        run: |
+          prs=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "PROD_DEPLOY_20250519 in:title" --json number,reviews,mergedAt | jq -c '.[]')
+          echo "prs=$prs"
+
   start_coordinated_merge:
     name: Start coordinated merge
     needs: check_validations_on_other_repositories
