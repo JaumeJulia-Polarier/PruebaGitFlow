@@ -78,6 +78,7 @@ jobs:
 
           echo "ready_to_merge=true" >> $GITHUB_OUTPUT
           echo "pr_numbers=${pr_numbers[@]}" >> $GITHUB_OUTPUT
+          echo "pr_numbers=${pr_numbers[@]}"
 
   start_coordinated_merge:
     name: Start coordinated merge
@@ -103,6 +104,7 @@ jobs:
             echo "ID: $id"
             # pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number | jq -r '.[0].number')
             pr_number=${pr_numbers[$repo]}
+            echo "PR number: $pr_number"
             if [[ "$pr_number" != "null" ]]; then
               echo "Mergeando PR #$pr_number en $repo"
               gh pr merge $pr_number -R "$repo" --merge
