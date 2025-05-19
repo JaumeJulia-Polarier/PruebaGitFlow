@@ -94,7 +94,8 @@ jobs:
             echo "Repo: $repo"
             echo "ID: $id"
             echo "pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number)"
-            echo "$(gh pr list -R "$repo" --state open --search "$id in:title" --json number | jq -r '.[0].number')"
+            echo "Y esto me saca algo al menos? prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')"
+            pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
             pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number | jq -r '.[0].number')
             if [[ "$pr_number" != "null" ]]; then
               echo "Mergeando PR #$pr_number en $repo"
