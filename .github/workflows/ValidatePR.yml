@@ -88,6 +88,8 @@ jobs:
 
       - name: Just checking
         id: whut
+        env: 
+          GH_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
         run: |
           prs=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "PROD_DEPLOY_20250519 in:title" --json number,reviews,mergedAt | jq -c '.[]')
           echo "prs=$prs"
