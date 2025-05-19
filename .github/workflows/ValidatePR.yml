@@ -31,8 +31,11 @@ jobs:
         id: HUUh
         env: 
           GH_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+          FRONTEND_REPO: ${{ secrets.FRONTEND_REPO }}
+          BACKEND_REPO: ${{ secrets.BACKEND_REPO }}
+          SQL_REPO: ${{ secrets.SQL_REPO }}
         run: |
-          prs=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "PROD_DEPLOY_20250519 in:title" --json number,reviews,mergedAt | jq -c '.[]')
+          prs=$(gh pr list -R "$BACKEND_REPO" --state open --search "PROD_DEPLOY_20250519 in:title" --json number,reviews,mergedAt | jq -c '.[]')
           echo "prs=$prs"
 
       - name: Verify PRs in other repositories
@@ -98,8 +101,11 @@ jobs:
         id: whut
         env: 
           GH_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+          FRONTEND_REPO: ${{ secrets.FRONTEND_REPO }}
+          BACKEND_REPO: ${{ secrets.BACKEND_REPO }}
+          SQL_REPO: ${{ secrets.SQL_REPO }}
         run: |
-          prs=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "PROD_DEPLOY_20250519 in:title" --json number,reviews,mergedAt | jq -c '.[]')
+          prs=$(gh pr list -R "$BACKEND_REPO" --state open --search "PROD_DEPLOY_20250519 in:title" --json number,reviews,mergedAt | jq -c '.[]')
           echo "prs=$prs"
 
   start_coordinated_merge:
