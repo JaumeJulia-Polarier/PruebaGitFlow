@@ -49,6 +49,8 @@ jobs:
             echo "allPR=$allPR"
             matching_prs=$(echo "$prs" | jq --arg id "$id" '[.[] | select(.title | contains($id))]')
             echo "matching_prs=$matching_prs"
+            jqMatching_PRS=$(echo "$matching_prs" | jq -c '.[]')
+            echo "jqMatching_PRS=$jqMatching_PRS"
 
             echo "prs=$prs"
             if [[ -z "$prs" ]]; then
