@@ -27,6 +27,14 @@ jobs:
           fi
           echo "ID_PR=$ID_PR" >> $GITHUB_OUTPUT
 
+      - name: Sabotage step
+        id: HUUh
+        env: 
+          GH_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+        run: |
+          prs=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "PROD_DEPLOY_20250519 in:title" --json number,reviews,mergedAt | jq -c '.[]')
+          echo "prs=$prs"
+
       - name: Verify PRs in other repositories
         id: verify
         env: 
