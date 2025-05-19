@@ -58,6 +58,7 @@ jobs:
           }
 
           mad_function "$BACKEND_REPO" "$ID_PR"
+          echo "id_pr=$ID_PR"
 
           check_repo() {
             repo=$1
