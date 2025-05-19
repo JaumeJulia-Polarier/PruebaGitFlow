@@ -103,6 +103,7 @@ jobs:
           ID_PR: ${{ needs.check_validations_on_other_repositories.outputs.id_pr }}
           pr_numbers: ${{ needs.check_validations_on_other_repositories.outputs.pr_numbers }}
         run: |
+          echo "${pr_numbers[@]}"
           merge_if_exists() {
             repo=$1
             id=$2
