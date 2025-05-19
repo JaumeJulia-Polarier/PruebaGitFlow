@@ -41,6 +41,8 @@ jobs:
             repo=$1
             id=$2
 
+            echo "$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')"
+
             prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
             echo "prs=$prs"
             if [[ -z "$prs" ]]; then
@@ -79,6 +81,8 @@ jobs:
     needs: check_validations_on_other_repositories
     if: ${{ needs.check_validations_on_other_repositories.outputs.ready_to_merge == 'true' }}
     runs-on: ubuntu-latest
+    environment: ${{ github.event.pull_request.base.ref }}
+
     steps:
       - name: Mergear en otros repos (A y B)
         env:
@@ -94,7 +98,10 @@ jobs:
             echo "Repo: $repo"
             echo "ID: $id"
             echo "pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number)"
-            echo "$(gh pr list -R "$repo" --state open --search "$id in:title" --json number | jq -r '.[0].number')"
+            echo "pr_number1=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "[PROD_DEPLOY_20250519_003] in:title" --json number)"
+            echo "pr_number2=$(gh pr list -R "JaumeJulia-Polarier/PruebaGitFlowBackend" --state open --search "[PROD_DEPLOY_20250519_003] in:title" --json number,reviews,mergedAt)"
+            echo "Y esto me saca algo al menos? prs=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')"
+            pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number,reviews,mergedAt | jq -c '.[]')
             pr_number=$(gh pr list -R "$repo" --state open --search "$id in:title" --json number | jq -r '.[0].number')
             if [[ "$pr_number" != "null" ]]; then
               echo "Mergeando PR #$pr_number en $repo"
@@ -105,14 +112,16 @@ jobs:
             fi
           }
 
+          echo "ID_PR: $ID_PR"
+
           merge_if_exists "$BACKEND_REPO" "$ID_PR"
           merge_if_exists "$SQL_REPO" "$ID_PR"
 
-      - name: Checkout del repositorio actual
-        uses: actions/checkout@v4
+      # - name: Checkout del repositorio actual
+      #   uses: actions/checkout@v4
 
-      - name: Mergear en repositorio actual
-        env:
-          GH_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
-        run: |
-          gh pr merge ${{ github.event.pull_request.number }} --merge
+      # - name: Mergear en repositorio actual
+      #   env:
+      #     GH_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
+      #   run: |
+      #     gh pr merge ${{ github.event.pull_request.number }} --merge
