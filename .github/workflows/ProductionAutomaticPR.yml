@@ -54,9 +54,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
           DEPLOY_ID: ${{ steps.generate_batch_id.outputs.deploy_id }}
         run: |
+          # Obtain task ids from commits
+          TASK_IDS=$(git log origin/main..HEAD --pretty=format:"- %s%n%b" --merges | grep -oE '\[#([a-zA-Z0-9\-]+)\]' | sort -u)
+
           PR_OUTPUT=$(gh pr create \
             --title "Automated PR: stage -> main [$DEPLOY_ID]" \
-            --body "This PR is part of the production deploy batch [$DEPLOY_ID]" \
+            --body "This PR is part of the production deploy batch [$DEPLOY_ID] which includes the following tasks:\n$TASK_IDS" \
             --base main \
             --head stage \
             --label "automated-pr" \

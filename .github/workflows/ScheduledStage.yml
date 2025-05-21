@@ -31,9 +31,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_GH_TOKEN }}
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Obtain task ids from commits
+          TASK_IDS=$(git log origin/stage..HEAD --pretty=format:"- %s%n%b" --merges | grep -oE '\[#([a-zA-Z0-9\-]+)\]' | sort -u)
+
           PR_OUTPUT=$(gh pr create \
             --title "Automated PR: develop -> stage" \
-            --body "This is an automated PR to stage." \
+            --body "This PR includes the following tasks:\n$TASK_IDS" \
             --base stage \
             --head develop \
             --label "automated-pr")
