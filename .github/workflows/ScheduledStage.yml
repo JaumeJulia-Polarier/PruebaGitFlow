@@ -34,6 +34,11 @@ jobs:
           # Obtain task ids from commits
           TASK_IDS=$(git log origin/stage..HEAD --pretty=format:"- %s%n%b" --merges | grep -oE '\[#([a-zA-Z0-9\-]+)\]' | sort -u)
 
+          # Add a fallback message if no task IDs are detected
+          if [ -z "$TASK_IDS" ]; then
+            TASK_IDS="No task IDs found in the commits."
+          fi
+
           PR_OUTPUT=$(gh pr create \
             --title "Automated PR: develop -> stage" \
             --body "This PR includes the following tasks:\n$TASK_IDS" \

@@ -57,6 +57,11 @@ jobs:
           # Obtain task ids from commits
           TASK_IDS=$(git log origin/main..HEAD --pretty=format:"- %s%n%b" --merges | grep -oE '\[#([a-zA-Z0-9\-]+)\]' | sort -u)
 
+          # Add a fallback message if no task IDs are detected
+          if [ -z "$TASK_IDS" ]; then
+            TASK_IDS="No specific tasks detected for this deployment."
+          fi
+
           PR_OUTPUT=$(gh pr create \
             --title "Automated PR: stage -> main [$DEPLOY_ID]" \
             --body "This PR is part of the production deploy batch [$DEPLOY_ID] which includes the following tasks:\n$TASK_IDS" \
