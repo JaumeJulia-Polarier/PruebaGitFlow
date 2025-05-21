@@ -68,9 +68,15 @@ jobs:
             TASK_IDS="No specific tasks detected for this deployment."
           fi
 
+          pr_body=$(cat <<EOF
+            This PR is part of the production deploy batch [$DEPLOY_ID] which includes the following tasks:
+              
+            $TASK_IDS
+            EOF)
+
           PR_OUTPUT=$(gh pr create \
             --title "Automated PR: stage -> main [$DEPLOY_ID]" \
-            --body "This PR is part of the production deploy batch [$DEPLOY_ID] which includes the following tasks:\n$TASK_IDS" \
+            --body "$pr_body" \
             --base main \
             --head stage \
             --label "automated-pr" \
