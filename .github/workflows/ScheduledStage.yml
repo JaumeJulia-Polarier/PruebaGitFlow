@@ -44,10 +44,11 @@ jobs:
           fi
 
           pr_body=$(cat <<EOF
-            This PR includes the following tasks:
+          This PR includes the following tasks:
               
-            $TASK_IDS
-            EOF)
+          $TASK_IDS
+          EOF
+          )
 
           PR_OUTPUT=$(gh pr create \
             --title "Automated PR: develop -> stage" \

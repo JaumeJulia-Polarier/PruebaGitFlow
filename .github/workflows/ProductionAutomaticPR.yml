@@ -69,10 +69,11 @@ jobs:
           fi
 
           pr_body=$(cat <<EOF
-            This PR is part of the production deploy batch [$DEPLOY_ID] which includes the following tasks:
-              
-            $TASK_IDS
-            EOF)
+          This PR is part of the production deploy batch [$DEPLOY_ID] which includes the following tasks:
+
+          $TASK_IDS
+          EOF
+          )
 
           PR_OUTPUT=$(gh pr create \
             --title "Automated PR: stage -> main [$DEPLOY_ID]" \
