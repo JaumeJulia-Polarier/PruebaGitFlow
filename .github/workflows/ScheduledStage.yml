@@ -32,7 +32,7 @@ jobs:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Obtain task ids from commits
-          TASK_IDS=$(git log origin/stage..HEAD --pretty=format:"- %s%n%b" --merges | grep -oE '\[#([a-zA-Z0-9\-]+)\]' | sort -u)
+          TASK_IDS=$(git log origin/stage..origin/develop --pretty=format:"- %s%n%b" --merges | grep -oE '\[#([a-zA-Z0-9\-]+)\]' | sort -u)
 
           # Add a fallback message if no task IDs are detected
           if [ -z "$TASK_IDS" ]; then
