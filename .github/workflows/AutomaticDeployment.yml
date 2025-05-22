@@ -16,17 +16,102 @@ jobs:
     environment: ${{github.ref_name}}
 
     steps:
+      - name: Desplegando en ${{ vars.TEXT }}
+        run: echo ${{ vars.TEXT }}
+
+      # - name: Testing WinRM connection
+      #   uses: microsoft/psremoting@v0.1.1
+      #   with:
+      #     hostname: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USER }}
+      #     password: ${{ secrets.SERVER_PASSWORD }}
+      #     port: 5985
+      #     transport: http
+      #     script: |
+      #       Write-Output "¡Conexión exitosa desde GitHub Actions!"
+
+      - name: Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          # Si tenemos taillock hay que usar esto:
+          authkey: tskey-auth-... # ${{ secrets.TAILGATE_TSKEY }}
+          statedir: /tmp/tailscale-state/ #se puede cambiar pero no es necesario
+          # Si no tenemos taillock hay que usar esto:
+          # oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          # oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          # se recomienda usar la cache para reducir tiempo de descarga
+          # use-cache: 'true'
+          # si necesitamos establecer una version de tailscale
+          version: 'latest' # '1.42.0' # o ponemos latest para la version mas reciente
+          # si queremos usar un subnet router
+          
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: github ref_name
-        run: echo ${{github.ref_name}}
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '18'
+
+      # - name: Install dependencies
+      #   run: npm install
+
+      # - name: Build project
+      #   run: npm run build
+
+      # - name: Zip build folder
+      #   run: zip -r build.zip build
+
       
-      - name: github ref_name por si acaso
-        run: echo "${{ github.ref_name }}"
 
-      - name: Log text variable
-        run: echo ${{ vars.TEXT }}
+      # - name: Copy build.zip to server
+      #   uses: microsoft/psremoting@v0.1.1
+      #   with:
+      #     hostname: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USER }}
+      #     password: ${{ secrets.SERVER_PASSWORD }}
+      #     port: 5985
+      #     transport: http
+      #     copy: |
+      #       [{
+      #         "source": "build.zip",
+      #         "destination": "C:\\Temp\\build.zip"
+      #       }]
 
-      - name: Log text variable por si acaso
-        run: echo "${{ vars.TEXT }}"
+      # - name: Stop IIS AppPool, Deploy, and Restart
+      #   uses: microsoft/psremoting@v0.1.1
+      #   with:
+      #     hostname: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USER }}
+      #     password: ${{ secrets.SERVER_PASSWORD }}
+      #     port: 5985
+      #     transport: http
+      #     script: |
+      #       $appPool = "MiAppPool"
+      #       $deployPath = "C:\inetpub\wwwroot\mi-app"
+      #       $zipPath = "C:\Temp\build.zip"
+
+      #       Import-Module WebAdministration
+
+      #       Write-Output "Deteniendo Application Pool..."
+      #       Stop-WebAppPool -Name $appPool
+
+      #       Start-Sleep -Seconds 2
+
+      #       Write-Output "Eliminando archivos existentes..."
+      #       if (Test-Path $deployPath) {
+      #         Remove-Item "$deployPath\*" -Recurse -Force
+      #       } else {
+      #         New-Item -ItemType Directory -Path $deployPath
+      #       }
+
+      #       Write-Output "Descomprimiendo nueva versión..."
+      #       Expand-Archive -Force $zipPath -DestinationPath $deployPath
+
+      #       Remove-Item $zipPath
+
+      #       Write-Output "Reiniciando Application Pool..."
+      #       Start-WebAppPool -Name $appPool
+
+      #       Write-Output "Despliegue completado correctamente."
