@@ -19,6 +19,10 @@ jobs:
       - name: Desplegando en ${{ vars.TEXT }}
         run: echo ${{ vars.TEXT }}
 
+      - name: Debug
+        run: |
+          echo "Client ID, censored: ${{ secrets.TS_OAUTH_CLIENT_ID }}"
+          echo "Client secret, censored: ${{ secrets.TS_OAUTH_CLIENT_ID }}"
       # - name: Testing WinRM connection
       #   uses: microsoft/psremoting@v0.1.1
       #   with:
