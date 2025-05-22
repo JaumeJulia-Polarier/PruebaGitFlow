@@ -19,21 +19,6 @@ jobs:
       - name: Desplegando en ${{ vars.TEXT }}
         run: echo ${{ vars.TEXT }}
 
-      - name: Debug
-        run: |
-          if [ -z "${{ secrets.TS_OAUTH_CLIENT_ID }}" ]; then echo "❌ TS_OAUTH_CLIENT_ID is empty"; fi
-          if [ -z "${{ secrets.TS_OAUTH_SECRET }}" ]; then echo "❌ TS_OAUTH_SECRET is empty"; fi
-      # - name: Testing WinRM connection
-      #   uses: microsoft/psremoting@v0.1.1
-      #   with:
-      #     hostname: ${{ secrets.SERVER_HOST }}
-      #     username: ${{ secrets.SERVER_USER }}
-      #     password: ${{ secrets.SERVER_PASSWORD }}
-      #     port: 5985
-      #     transport: http
-      #     script: |
-      #       Write-Output "¡Conexión exitosa desde GitHub Actions!"
-
       - name: Tailscale
         uses: tailscale/github-action@v3
         env:
@@ -53,6 +38,10 @@ jobs:
           tags: 'tag:github-deploy'
           # si queremos usar un subnet router 
           
+      - name: Ping
+        run: |
+          echo "Pinging..."
+          ping -c 4 ${{ secrets.SERVER_HOST }}
 
       - name: Checkout repository
         uses: actions/checkout@v3
