@@ -50,7 +50,7 @@ jobs:
           # use-cache: 'true'
           # si necesitamos establecer una version de tailscale
           version: 'latest' # '1.42.0' # o ponemos latest para la version mas reciente
-          tags: 'github-deploy'
+          tags: 'tag:github-deploy'
           # si queremos usar un subnet router 
           
 
