@@ -16,17 +16,90 @@ jobs:
     environment: ${{github.ref_name}}
 
     steps:
+      - name: Desplegando en ${{ vars.TEXT }}
+        run: echo ${{ vars.TEXT }}
+
+      - name: Tailscale
+        uses: tailscale/github-action@v3
+        env:
+          OAUTH_CLIENT_ID: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET: ${{ secrets.TS_OAUTH_SECRET }}
+        with:
+          oauth-client-id: "$OAUTH_CLIENT_ID"
+          oauth-secret: "$OAUTH_CLIENT_SECRET"
+          version: 'latest' # '1.42.0' # o ponemos latest para la version mas reciente
+          tags: 'tag:github-deploy'
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: github ref_name
-        run: echo ${{github.ref_name}}
-      
-      - name: github ref_name por si acaso
-        run: echo "${{ github.ref_name }}"
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-      - name: Log text variable
-        run: echo ${{ vars.TEXT }}
+      - name: Install dependencies
+        run: npm install
 
-      - name: Log text variable por si acaso
-        run: echo "${{ vars.TEXT }}"
+      - name: Build project
+        run: npm run build
+
+      # zip the build folder except for the flag files
+      - name: Remove flag files
+        run: |
+          find build -type f \( -name "*.flag" -o -name "*.txt" \) -delete
+
+      - name: Zip build folder
+        run: zip -r build.zip build      
+
+      - name: Copy build.zip to server
+        uses: microsoft/psremoting@v0.1.1
+        with:
+          hostname: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 5985
+          transport: http
+          copy: |
+            [{
+              "source": "build.zip",
+              "destination": "C:\\Temp\\build.zip"
+            }]
+
+      - name: Stop IIS AppPool, Deploy, and Restart
+        uses: microsoft/psremoting@v0.1.1
+        env:
+          AppPool: ${{ secrets.APP_POOL }}
+        with:
+          hostname: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 5985
+          transport: http
+          script: |
+            $deployPath = "C:\inetpub\wwwroot\mi-app"
+            $zipPath = "C:\Temp\build.zip"
+
+            Import-Module WebAdministration
+
+            Write-Output "Deteniendo Application Pool..."
+            Stop-WebAppPool -Name $AppPool
+
+            Start-Sleep -Seconds 2
+
+            Write-Output "Eliminando archivos existentes..."
+            if (Test-Path $deployPath) {
+              Remove-Item "$deployPath\*" -Recurse -Force
+            } else {
+              New-Item -ItemType Directory -Path $deployPath
+            }
+
+            Write-Output "Descomprimiendo nueva versión..."
+            Expand-Archive -Force $zipPath -DestinationPath $deployPath
+
+            Remove-Item $zipPath
+
+            Write-Output "Reiniciando Application Pool..."
+            Start-WebAppPool -Name $AppPool
+
+            Write-Output "Despliegue completado correctamente."
