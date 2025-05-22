@@ -21,8 +21,8 @@ jobs:
 
       - name: Debug
         run: |
-          echo "Client ID, censored: ${{ secrets.TS_OAUTH_CLIENT_ID }}"
-          echo "Client secret, censored: ${{ secrets.TS_OAUTH_CLIENT_ID }}"
+          if [ -z "${{ secrets.TS_OAUTH_CLIENT_ID }}" ]; then echo "❌ TS_OAUTH_CLIENT_ID is empty"; fi
+          if [ -z "${{ secrets.TS_OAUTH_SECRET }}" ]; then echo "❌ TS_OAUTH_SECRET is empty"; fi
       # - name: Testing WinRM connection
       #   uses: microsoft/psremoting@v0.1.1
       #   with:
