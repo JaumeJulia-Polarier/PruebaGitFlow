@@ -13,6 +13,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: develop
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: Fetch stage branch
+        run: git fetch origin stage
 
       - name: Preventive Unit testing
         run: |
@@ -39,9 +43,16 @@ jobs:
             TASK_IDS="No task IDs found in the commits."
           fi
 
+          pr_body=$(cat <<EOF
+          This PR includes the following tasks:
+              
+          $TASK_IDS
+          EOF
+          )
+
           PR_OUTPUT=$(gh pr create \
             --title "Automated PR: develop -> stage" \
-            --body "This PR includes the following tasks:\n$TASK_IDS" \
+            --body "$pr_body" \
             --base stage \
             --head develop \
             --label "automated-pr")
