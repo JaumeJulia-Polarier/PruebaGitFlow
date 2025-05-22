@@ -34,11 +34,11 @@ jobs:
         uses: tailscale/github-action@v3
         with:
           # Si tenemos taillock hay que usar esto:
-          authkey: tskey-auth-... # ${{ secrets.TAILGATE_TSKEY }}
-          statedir: /tmp/tailscale-state/ #se puede cambiar pero no es necesario
+          # authkey: tskey-auth-... # ${{ secrets.TAILGATE_TSKEY }}
+          # statedir: /tmp/tailscale-state/ #se puede cambiar pero no es necesario
           # Si no tenemos taillock hay que usar esto:
-          # oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          # oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           # se recomienda usar la cache para reducir tiempo de descarga
           # use-cache: 'true'
           # si necesitamos establecer una version de tailscale
