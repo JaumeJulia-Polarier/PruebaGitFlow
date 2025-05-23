@@ -48,6 +48,8 @@ jobs:
             NEXT_TAG="1.$DATE.$NEXT_INDEX"
           fi
 
+          git remote set-url origin https://x-access-token:${{ secrets.DEPLOY_GH_TOKEN }}@github.com/${{ github.repository }}.git
+
           # Crear tag en el último commit (el merge a main)
           git tag "$NEXT_TAG"
           git push origin "$NEXT_TAG"
